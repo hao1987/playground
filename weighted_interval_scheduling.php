@@ -21,35 +21,43 @@ function weighted_interval_schedule($jobs) {
 	$opt[0] = $jobs[0][0];
 	$parent = array();
 	$parent[0] = 0;
+	$include_flag = array();
 	for ($i=1; $i < count($jobs); $i++) {
 		$previous_jobs = array_slice($jobs, 0, $i);
 		$included = $jobs[$i][0];
 		if (count($previous_jobs) > 0) {
 			$overlap = 0;
-			foreach ($previous_jobs as $key => $value) {
+			foreach ($previous_jobs as $key => $value) { //this part can be done using binary search
 				if ($value[1][1] >= $jobs[$i][1][0]) {
 					// unset($previous_jobs[$key]);
 					$overlap ++;
 				}
 			}
-			$included += $opt[count($previous_jobs) - $overlap - 1];
+			$parent[$i] = count($previous_jobs) - $overlap - 1;
+			$included += $opt[$parent[$i]];
 			// var_dump($included);
 			// die();
 		}
 		$excluded = $opt[$i-1];
-		if ($excluded >= $included) {
-			$opt[$i] = $excluded;
-			$parent[$i] = $i - 1;
-		} else {
-			$opt[$i] = $included;
-			$parent[$i] = 0;
-		}
-
+		$opt[$i] = $excluded >= $included ? $excluded : $included;
+		$include_flag[$i] = ($excluded < $included);
 		// var_dump($included);
 		// var_dump($excluded);
 		// break;
 	}
-	return $opt;
+
+	$ans = array(); 
+	$i = count($jobs);
+	while ($i > 0) {
+		if ($include_flag[$i]) {
+			array_unshift($ans, $i);
+			$i = $parent[$i];
+		} else {
+			$i --;
+		}
+	}
+
+	return $ans;
 }
 
 
