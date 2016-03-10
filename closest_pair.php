@@ -1,6 +1,6 @@
 <?php
 
-// divide and conquer on closest pair pts, 
+// sadfsafsa divide and conquer on closest pair pts, 
 $points = array(
 	array(1, 0),
 	array(4, -1),
